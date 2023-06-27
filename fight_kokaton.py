@@ -27,6 +27,7 @@ class Bird:
     """
     ゲームキャラクター（こうかとん）に関するクラス
     """
+
     delta = {  # 押下キーと移動量の辞書
         pg.K_UP: (0, -5),
         pg.K_DOWN: (0, +5),
@@ -40,6 +41,7 @@ class Bird:
         引数1 num：こうかとん画像ファイル名の番号
         引数2 xy：こうかとん画像の位置座標タプル
         """
+        
         self.img = pg.transform.flip(  # 左右反転
             pg.transform.rotozoom(  # 2倍に拡大
                 pg.image.load(f"ex03/fig/{num}.png"), 
@@ -75,6 +77,48 @@ class Bird:
         if check_bound(self.rct) != (True, True):
             self.rct.move_ip(-sum_mv[0], -sum_mv[1])
         screen.blit(self.img, self.rct)
+
+class beam:
+    """
+    ゲームキャラクター（こうかとん）のビームに関するクラス
+    """
+
+    delta = {  # 押下キーと移動量の辞書
+        pg.K_UP: (0, -5),
+        pg.K_DOWN: (0, +5),
+        pg.K_LEFT: (-5, 0),
+        pg.K_RIGHT: (+5, 0),
+    }
+
+    def __init__(self, num: int, xy: tuple[int, int]):
+        """
+        こうかとんビームSurfaceを生成する
+        引数1 num：こうかとん画像ファイル名の番号
+        引数2 xy：こうかとん画像の位置座標タプル
+        """
+        
+        self.img = pg.image.load(f"beam.png")
+        self.rct = self.img.get_rect()
+        self.rct.center = xy
+
+        
+
+    def change_img(self, num: int, screen: pg.Surface):
+   
+        self.img = pg.image.load(f"beam.png")
+        screen.blit(self.img, self.rct)
+
+    def update(self, key_lst: list[bool], screen: pg.Surface):
+        sum_mv = [0, 0]
+        for k, mv in __class__.delta.items():
+            if key_lst[k]:
+                sum_mv[0] += mv[0]
+                sum_mv[1] += mv[1]
+        self.rct.move_ip(sum_mv)
+        if check_bound(self.rct) != (True, True):
+            self.rct.move_ip(-sum_mv[0], -sum_mv[1])
+        screen.blit(self.img, self.rct)
+
 
 
 class Bomb:
@@ -113,6 +157,7 @@ def main():
     screen = pg.display.set_mode((WIDTH, HEIGHT))    
     bg_img = pg.image.load("ex03/fig/pg_bg.jpg")
     bird = Bird(3, (900, 400))
+    beam=beam()
     bomb = Bomb((255, 0, 0), 10)
 
     clock = pg.time.Clock()
@@ -133,6 +178,7 @@ def main():
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
+        beam.update(screen)
         bomb.update(screen)
         pg.display.update()
         tmr += 1
